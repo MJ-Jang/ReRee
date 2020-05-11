@@ -2,9 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals, print_function, division
-from reree.time_converter import extract_dates, extract_dates_from_to
 from reree.rule_generator import RegexPatternGenerator
-from reree.rules import regex_rules
 
 from typing import Text, List, Any
 
@@ -15,12 +13,12 @@ class ReReeExtractor:
 
     name = "ReReeExtractor"
 
-    def __init__(self, patterns: list) -> None:
+    def __init__(self, regex_patterns: list, combination_patterns: dict) -> None:
         """
         patterns: new list of patterns: [{"name": "City", "pattern": "-1-1-23-9"}, ...]
         """
         super(ReReeExtractor, self).__init__()
-        generator = RegexPatternGenerator(patterns)
+        generator = RegexPatternGenerator(regex_patterns, combination_patterns)
         self.patterns = generator.generate_patterns()
 
     def match_regex(self, text: Text):
@@ -47,5 +45,4 @@ class ReReeExtractor:
         # match regex entities
         extracted = []
         extracted += self.match_regex(text)
-
         return extracted

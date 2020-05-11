@@ -1,0 +1,10 @@
+PhoneNumber:
+  pattern1:
+    - PhoneNumber
+Email:
+  pattern1:
+    - Email
+Data_Size:
+  pattern1:
+    - Data_Numbers
+    - Data_Units

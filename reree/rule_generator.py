@@ -7,31 +7,25 @@ class RegexPatternGenerator:
 
     Usage:
         1) write regex pattern in rule.md file
-        2) declare entity name as a variable name (ex: regex_{PatternName})
-        3) write regex patterns composing the entity in order (ex: regex_{PatternName} = [('Data', 'PhoneNumber')])
+        2) write combination pattern in combination.yml file
     """
 
-    regex_PhoneNumber = [('PhoneNumber',)]
-    regex_Email = [('Email',)]
-    regex_Data_Size = [('Data_Numbers', 'Data_Units')]
-
-    def __init__(self, regex_data):
-        self.patterns = [s for s in RegexPatternGenerator.__dict__.keys() if 'regex' in s]
-        self.attribute_dict = RegexPatternGenerator.__dict__
+    def __init__(self, regex_data, comb_pattern):
         self.regex_data = {}
         for s in regex_data:
             self.regex_data[s['name']] = s['pattern']
+        self.com_pattern = comb_pattern
 
     def generate_patterns(self):
         outp = []
-        for p in self.patterns:
-            entity_list = self.attribute_dict[p]
+        for entity in self.com_pattern.keys():
+            entity_list = self.com_pattern[entity]
             for e in entity_list:
                 if len(e) == 1:
                     outp_ = self.process_single_pattern(e)
                     outp.append(outp_)
                 elif len(e) > 1:
-                    outp_ = self.process_non_single_pattern(p, e)
+                    outp_ = self.process_non_single_pattern(entity, e)
                     outp.append(outp_)
         return outp
 
