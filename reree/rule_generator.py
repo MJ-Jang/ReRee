@@ -45,6 +45,6 @@ class RegexPatternGenerator:
 
         pattern_ = ''
         for s in pattern_comb:
-            pattern_ += ''.join(s) + '|'
+            pattern_ += '\\s?'.join(s) + '|'
         outp = {'name': entity_name_, 'pattern': pattern_[:-1]}
         return outp
