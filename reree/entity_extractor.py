@@ -21,6 +21,14 @@ class ReReeExtractor:
         generator = RegexPatternGenerator(regex_patterns, combination_patterns)
         self.patterns = generator.generate_patterns()
 
+    def process(self, text: Text, **kwargs: Any) -> List:
+        """Process an incoming message."""
+        # match regex entities
+        extracted = []
+        extracted += self.match_regex(text)
+        extracted = self.remove_overlap(extracted)
+        return extracted
+
     def match_regex(self, text: Text):
         extracted = []
         for d in self.patterns:
@@ -37,12 +45,24 @@ class ReReeExtractor:
                         "entity": d["name"],
                     }
                     extracted.append(entity)
-                    text = text[:s] + '#'*(e-s) + text[e:]
         return extracted
 
-    def process(self, text: Text, **kwargs: Any) -> List:
-        """Process an incoming message."""
-        # match regex entities
-        extracted = []
-        extracted += self.match_regex(text)
-        return extracted
+    @staticmethod
+    def remove_overlap(entity_result):
+        def check_range_intersect(inp, tgt):
+            if inp[0] == tgt[0] and inp[1] == tgt[1]:
+                return False
+            else:
+                if inp[0] >= tgt[0]:
+                    if inp[1] <= tgt[1]:
+                        return True
+                return False
+
+        pos = [(o['start'], o['end']) for o in entity_result]
+        idx = []
+        for i in range(len(pos)):
+            for j in range(len(pos)):
+                if check_range_intersect(pos[i], pos[j]):
+                    idx.append(i)
+        out = [entity_result[i] for i in range(len(entity_result)) if i not in idx]
+        return out

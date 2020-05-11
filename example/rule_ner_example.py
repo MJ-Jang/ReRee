@@ -7,4 +7,4 @@ comb_pattern = get_regex_combination('data/combination.yml')
 
 
 extractor = ReReeExtractor(reg_pattern, comb_pattern)
-extractor.process('10 GB 충전할라고 했는데 5GB만 충전할래')
+extractor.process('3박 4일 4박 5일')

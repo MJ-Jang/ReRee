@@ -8,3 +8,31 @@ Data_Size:
   pattern1:
     - Data_Numbers
     - Data_Units
+Date:
+  pattern1:
+    - Date
+Month:
+  pattern1:
+    - Month
+Year:
+  pattern1:
+    - Year
+Stay_Period:
+  pattern1:
+    - Stay_Period
+  pattern2:
+    - Date
+    - Period_phrase
+  pattern3:
+    - Cound_Date
+    - Period_phrase
+  pattern4:
+    - Count_Week
+    - Period_phrase
+  pattern5:
+    - Count_Month
+    - Period_phrase
+  pattern6:
+    - Count_Year
+    - Period_phrase
+
