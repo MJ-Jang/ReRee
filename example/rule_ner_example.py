@@ -1,5 +1,4 @@
 from reree.entity_extractor import ReReeExtractor
-from reree.rule_generator import RegexPatternGenerator
 from reree.helper import get_regex_data
 
 
