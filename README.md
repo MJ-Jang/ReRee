@@ -1,2 +1,4 @@
 # ReRee
-Regex Rele Entity Extractor
+Regex Rule Entity Extractor
+
+Documentation will be updated...
