@@ -313,6 +313,7 @@ def extract_dates_from_to(text: str, entities: list, today=None):
     elif len(dates) == 1:
         if check_is_start(text):
             outp['Start_Date'] = dates[0]
+            # Stay period logic
             if 'Stay_Period' in [e['entity'] for e in entities]:
                 period_value = list(filter(lambda x: x['entity'] == 'Stay_Period', entities))
                 value = period_value[0]['value']

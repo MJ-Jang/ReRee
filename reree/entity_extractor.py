@@ -14,7 +14,7 @@ class ReReeExtractor:
 
     name = "ReReeExtractor"
 
-    def __init__(self, regex_patterns: list, combination_patterns: dict, today: None) -> None:
+    def __init__(self, regex_patterns: list, combination_patterns: dict, today=None) -> None:
         """
         patterns: new list of patterns: [{"name": "City", "pattern": "-1-1-23-9"}, ...]
         """
