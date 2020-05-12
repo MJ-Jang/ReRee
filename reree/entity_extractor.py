@@ -14,13 +14,14 @@ class ReReeExtractor:
 
     name = "ReReeExtractor"
 
-    def __init__(self, regex_patterns: list, combination_patterns: dict) -> None:
+    def __init__(self, regex_patterns: list, combination_patterns: dict, today: None) -> None:
         """
         patterns: new list of patterns: [{"name": "City", "pattern": "-1-1-23-9"}, ...]
         """
         super(ReReeExtractor, self).__init__()
         generator = RegexPatternGenerator(regex_patterns, combination_patterns)
         self.patterns = generator.generate_patterns()
+        self.today = None
 
     def process(self, text: Text, **kwargs: Any) -> List:
         """Process an incoming message."""
@@ -30,7 +31,7 @@ class ReReeExtractor:
         extracted = self.remove_overlap(extracted)
 
         # extract start/end date
-        start_end = extract_dates_from_to(text=text, entities=extracted)
+        start_end = extract_dates_from_to(text=text, entities=extracted, today=self.today)
         for key in start_end.keys():
             if start_end.get(key):
                 entity = {
