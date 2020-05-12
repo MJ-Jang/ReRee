@@ -3,6 +3,7 @@
 
 from __future__ import unicode_literals, print_function, division
 from reree.rule_generator import RegexPatternGenerator
+from reree.time_converter import extract_dates_from_to
 
 from typing import Text, List, Any
 
@@ -27,6 +28,20 @@ class ReReeExtractor:
         extracted = []
         extracted += self.match_regex(text)
         extracted = self.remove_overlap(extracted)
+
+        # extract start/end date
+        start_end = extract_dates_from_to(text=text, entities=extracted)
+        for key in start_end.keys():
+            if start_end.get(key):
+                entity = {
+                    "start": -1,
+                    "end": -1,
+                    "value": start_end.get(key),
+                    "confidence": 1.0,
+                    "entity": key,
+                }
+                extracted.append(entity)
+
         return extracted
 
     def match_regex(self, text: Text):

@@ -1,0 +1,138 @@
+PhoneNumber:
+  pattern1:
+    - PhoneNumber
+Email:
+  pattern1:
+    - Email
+Data_Size:
+  pattern1:
+    - Data_Numbers
+    - Data_Units
+Date:
+  pattern1:
+    - Date
+Month:
+  pattern1:
+    - Month
+Year:
+  pattern1:
+    - Year
+Stay_Period:
+  pattern1:
+    - Period_time
+  pattern2:
+    - Period_time
+    - Period_phrase
+  pattern3:
+    - Date
+    - Period_phrase
+  pattern4:
+    - Count_Date
+    - Period_phrase
+  pattern5:
+    - Count_Week
+    - Period_phrase
+  pattern6:
+    - Count_Month
+    - Period_phrase
+  pattern7:
+    - Count_Year
+    - Period_phrase
+Relative_Date_Past_1:
+  pattern1:
+    - Relative_Date_Past_1
+Relative_Date_Past_2:
+  pattern1:
+    - Relative_Date_Past_2
+Relative_Date_Past:
+  pattern1:
+    - Count_Date
+    - Time_before
+Relative_Date_Present:
+  pattern1:
+    - Relative_Date_Present
+Relative_Date_Future_1:
+  pattern1:
+    - Relative_Date_Future_1
+Relative_Date_Future_2:
+  pattern1:
+    - Relative_Date_Future_2
+Relative_Date_Future:
+  pattern1:
+    - Count_Date
+    - Time_after
+Relative_Week_Past_1:
+  pattern1:
+    - Relative_Week_Past_1
+Relative_Week_Past_2:
+  pattern1:
+    - Relative_Week_Past_2
+Relative_Week_Past:
+  pattern1:
+    - Count_Week
+    - Time_before
+Relative_Week_Present:
+  pattern1:
+    - Relative_Week_Present
+Relative_Week_Future_1:
+  pattern1:
+    - Relative_Week_Future_1
+Relative_Week_Future_2:
+  pattern1:
+    - Relative_Week_Future_2
+Relative_Week_Future:
+  pattern1:
+    - Count_Week
+    - Time_after
+Relative_Month_Past_1:
+  pattern1:
+    - Relative_Month_Past_1
+Relative_Month_Past_2:
+  pattern1:
+    - Relative_Month_Past_2
+Relative_Month_Past:
+  pattern1:
+    - Count_Month
+    - Time_before
+Relative_Month_Present:
+  pattern1:
+    - Relative_Month_Present
+Relative_Month_Future_1:
+  pattern1:
+    - Relative_Month_Future_1
+Relative_Month_Future_2:
+  pattern1:
+    - Relative_Month_Future_2
+Relative_Month_Future:
+  pattern1:
+    - Count_Month
+    - Time_after
+Relative_Year_Past_1:
+  pattern1:
+    - Relative_Year_Past_1
+Relative_Year_Past_2:
+  pattern1:
+    - Relative_Year_Past_2
+Relative_Year_Past:
+  pattern1:
+    - Count_Year
+    - Time_before
+Relative_Year_Present:
+  pattern1:
+    - Relative_Year_Present
+Relative_Year_Future_1:
+  pattern1:
+    - Relative_Year_Future_1
+Relative_Year_Future_2:
+  pattern1:
+    - Relative_Year_Future_2
+Relative_Year_Future:
+  pattern1:
+    - Count_Year
+    - Time_after
+Date_Format_YMD:
+  pattern1:
+    - Date_Format_YMD
+Date_Format_MB:
+  pattern1:
+    - Date_Format_MB

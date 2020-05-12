@@ -2,9 +2,9 @@ from reree.entity_extractor import ReReeExtractor
 from reree.helper import get_regex_data, get_regex_combination
 
 
-reg_pattern = get_regex_data('data/rule.md')
-comb_pattern = get_regex_combination('data/combination.yml')
+reg_pattern = get_regex_data('data/regex.md')
+comb_pattern = get_regex_combination('data/regex_combination.yml')
 
 
 extractor = ReReeExtractor(reg_pattern, comb_pattern)
-extractor.process('3박 4일 4박 5일')
+extractor.process('오늘부터 열흘동안')
