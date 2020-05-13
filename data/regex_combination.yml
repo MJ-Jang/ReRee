@@ -11,6 +11,9 @@ Data_Size:
 Date:
   pattern1:
     - Date
+Week_day:
+  pattern1:
+    - Week_day
 Month:
   pattern1:
     - Month
