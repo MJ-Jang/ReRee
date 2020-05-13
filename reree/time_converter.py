@@ -310,6 +310,13 @@ def extract_dates_from_to(text: str, entities: list, today=None):
                 return True
         return False
 
+    def fileter_entities(masked_text: str, entities: list):
+        indexs = []
+        for i, e in enumerate(entities):
+            if masked_text[e['start']:e['end']] == '#' * len(e['value']):
+                indexs.append(i)
+        return [entities[i] for i in indexs]
+
     if not today:
         today = datetime.datetime.now(tz=KST)
     outp = {
@@ -322,13 +329,13 @@ def extract_dates_from_to(text: str, entities: list, today=None):
     entities = extract_date_entities(entities)
     dates, text = basic_preprocess(entities, text, today)
     today, entities = set_init_date(entities, today)
+    entities = fileter_entities(text, entities)
 
     if entities:
         values = check_combination(entities)
         for v in values:
             if convert_to_date(v, today):
                 dates.append(convert_to_date(v, today))
-    print(dates)
     if len(dates) == 2:
         if check_is_start_end(text):
             start, end = dates
@@ -355,4 +362,8 @@ def extract_dates_from_to(text: str, entities: list, today=None):
                 outp['End_Date'] = date
         elif check_is_end(text):
             outp['End_Date'] = dates[0]
+
+    if outp['End_Date'] < outp['Start_Date']:
+        outp['End_Date'] = ''
+
     return outp
