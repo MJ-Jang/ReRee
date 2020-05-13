@@ -7,4 +7,4 @@ comb_pattern = get_regex_combination('data/regex_combination.yml')
 
 
 extractor = ReReeExtractor(reg_pattern, comb_pattern)
-extractor.process('오늘부터 열흘동안')
+extractor.process('프랑스로 여행간다')

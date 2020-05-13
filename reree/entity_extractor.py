@@ -33,15 +33,14 @@ class ReReeExtractor:
         # extract start/end date
         start_end = extract_dates_from_to(text=text, entities=extracted, today=self.today)
         for key in start_end.keys():
-            if start_end.get(key):
-                entity = {
-                    "start": -1,
-                    "end": -1,
-                    "value": start_end.get(key),
-                    "confidence": 1.0,
-                    "entity": key,
-                }
-                extracted.append(entity)
+            entity = {
+                "start": -1,
+                "end": -1,
+                "value": start_end.get(key),
+                "confidence": 1.0,
+                "entity": key,
+            }
+            extracted.append(entity)
 
         return extracted
 
