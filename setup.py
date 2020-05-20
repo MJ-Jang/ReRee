@@ -5,7 +5,7 @@ with open("requirements.txt") as f:
 
 setup(
     name='reree',
-    version='0.1.2',
+    version='0.1.3',
     description='REgex Rule Entity Extractor',
     author='MJ Jang',
     install_requires=[],
