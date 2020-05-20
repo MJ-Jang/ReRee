@@ -17,7 +17,10 @@ date_pattern = re.compile(pattern='20\\d{2}\\.[0-1]\\d\\.[0-3]\\d')
 KST = datetime.timezone(datetime.timedelta(hours=9))
 days = ['월', '화', '수', '목', '금', '토', '일']
 
-# sequence is important
+SINGLE_DATE_ENTITIES = ['Date', 'Week_day', 'Relative_Date_Present',
+                        'Relative_Date_Future_1', 'Relative_Date_Future_2',
+                        'Relative_Date_Future', 'Relative_Week_Future',
+                        'Relative_Month_Future']
 
 specialMappingDict = {
     "Week_day": {
@@ -27,24 +30,28 @@ specialMappingDict = {
     }
 }
 
+PATTERN_YMD = re.compile('(?:20|19)?\\d{2}[\\s\\.\\-/]+[0-1]?\\d[\\s\\.\\-/]+[0-3]?\\d일?날?')
+PATTERN_MD = re.compile('[0-1]?\\d[\\s\\.\\-/]+[0-3]?\\d일?날?')
+
 
 # 1. extract time related entities from entity extracted
-def extract_date_entities(entities: list):
+def extract_date_entities(entities: list, text: str):
     timeEntities = ['Year', 'Month', 'Week', 'Date', 'Stay_Period']
     outp = []
     for e in entities:
         for te in timeEntities:
             if te in e['entity']:
                 outp.append(e)
+                text = text.replace(e['value'], '#' * len(e['value']))
     if outp:
         outp = sorted(outp, key=lambda x: x['start'])
-    return outp
+    return outp, text
 
 
 def check_combination(entities: list):
     outp = []
-    if entities[0]['entity'] in ['Date', 'Week_day', 'Relative_Date_Present',
-                                 'Relative_Date_Future_1', 'Relative_Date_Future_2']:
+    # Single entity
+    if entities[0]['entity'] in SINGLE_DATE_ENTITIES:
         tmp = {
             'comb': [entities[0]['entity']],
             str(entities[0]['entity']): entities[0]['value']
@@ -112,6 +119,8 @@ def return_period_adddates(value: str) -> int:
     if period_:
         unit = period_[0][-1]
         add_dates += int(re.compile('[^\d]+').sub('', period_[0])) * addition_dict[unit]
+        if unit == '일':
+            add_dates -= 1
     return add_dates
 
 
@@ -129,27 +138,54 @@ def convert_to_date(cand: dict, today=None) -> str:
         today = datetime.datetime.now(tz=KST)
 
     date = ''
-
+    # Relative Date logic
     if cand['comb'] == ['Relative_Date_Present']:
         date = today
-
     if cand['comb'] == ['Relative_Date_Future_1']:
         date = today + datetime.timedelta(days=1)
-
     if cand['comb'] == ['Relative_Date_Future_2']:
         date = today + datetime.timedelta(days=2)
+    if cand['comb'] == ['Relative_Date_Future']:
+        normalized_value = normalize_Count_time(cand['Relative_Date_Future'])
+        add_date = re.search(pattern='^\d+', string=normalized_value)
+        if add_date:
+            s, e = add_date.span()
+            date = today + datetime.timedelta(days=int(normalized_value[s:e]))
+
+    # Relative Week Single entity
+    if cand['comb'] == ['Relative_Week_Future']:
+        normalized_value = normalize_Count_time(cand['Relative_Week_Future'])
+        add_date = re.search(pattern='^\d+', string=normalized_value)
+        if add_date:
+            s, e = add_date.span()
+            date = today + datetime.timedelta(days=7 * int(normalized_value[s:e]))
+
+    # Relative Month Single entity
+    if cand['comb'] == ['Relative_Month_Future']:
+        normalized_value = normalize_Count_time(cand['Relative_Month_Future'])
+        add_month = re.search(pattern='^\d+', string=normalized_value)
+        if add_month:
+            s, e = add_month.span()
+            date = datetime.datetime(year=today.year,
+                                     month=today.month + int(normalized_value[s:e]),
+                                     day=today.day)
 
     if cand['comb'] == ['Date']:
-        day = re.sub(pattern='[^0-9]+', repl='', string=cand['Date'])
+        day = normalize_Count_time(cand['Date'])
+        day = re.sub(pattern='[^0-9]+', repl='', string=day)
         if day:
             try:
                 date = set_date(year=today.year, month=today.month, day=int(day))
             except ValueError:
                 print('Cannot know exact number of specified date')
 
-    if cand['comb'] == ['Month_P', 'Date']:
-        month = re.sub(pattern='[^0-9]+', repl='', string=cand['Month'])
-        day = re.sub(pattern='[^0-9]+', repl='', string=cand['Date'])
+    if cand['comb'] == ['Month', 'Date']:
+        month = normalize_Count_time(cand['Date'])
+        month = re.sub(pattern='[^0-9]+', repl='', string=month)
+
+        day = normalize_Count_time(cand['Date'])
+        day = re.sub(pattern='[^0-9]+', repl='', string=day)
+
         if month and day:
             try:
                 date = set_date(year=today.year, month=int(month), day=int(day))
@@ -217,17 +253,17 @@ def extract_dates_from_to(text: str, entities: list, today=None):
         # start with only one Relative associated entity
         relative_count = len([e for e in entities if 'Relative_' in e['entity']])
         if relative_count == 1:
-            if entities[0]['entity'].startswith('Relative_Week_Future'):
+            if entities[0]['entity'].startswith('Relative_Week_Future_'):
                 add_week = int(entities[0]['entity'][-1])
                 today += datetime.timedelta(days=7 * add_week)
                 entities = entities[1:]
 
-            elif entities[0]['entity'].startswith('Relative_Month_Future'):
+            elif entities[0]['entity'].startswith('Relative_Month_Future_'):
                 add_month = int(entities[0]['entity'][-1])
                 today = datetime.date(year=today.year, month=today.month+add_month, day=today.day)
                 entities = entities[1:]
 
-            elif entities[0]['entity'].startswith('Relative_Year_Future'):
+            elif entities[0]['entity'].startswith('Relative_Year_Future_'):
                 add_year = int(entities[0]['entity'][-1])
                 today = datetime.date(year=today.year+add_year, month=today.month, day=today.day)
                 entities = entities[1:]
@@ -248,7 +284,8 @@ def extract_dates_from_to(text: str, entities: list, today=None):
         if month_count == 1:
             if entities[0]['entity'] == 'Month':
                 try:
-                    month = int(re.sub(pattern='[^\d]+', repl='', string=entities[0]['value']))
+                    month = normalize_Count_time(entities[0]['value'])
+                    month = int(re.sub(pattern='[^0-9]+', repl='', string=month))
                     today = datetime.date(year=today.year, month=month, day=today.day)
                 except ValueError:
                     print('Month is not proper value for converting')
@@ -256,26 +293,39 @@ def extract_dates_from_to(text: str, entities: list, today=None):
 
         return today, entities
 
-    def basic_preprocess(entities, text, today):
+    def basic_preprocess(text, today):
         dates = []
-        for e in entities:
-            if e['entity'] == 'Date_Format_YMD':
-                year, month, day = [int(s.strip()) for s in re.split(pattern='[\\s\\.\\-/]+', string=e['value'])]
+        match_ymd = PATTERN_YMD.findall(text)
+        if match_ymd:
+            for match in match_ymd:
+                m = re.search(pattern=match, string=text)
+                s, e = m.span()
+                value = text[s:e]
+                value_splitted = [re.sub(pattern='[^\\d]+', repl='', string=s).strip()
+                                  for s in re.split(pattern='[\\s\\.\\-/]+', string=value)]
+                year, month, day = [int(s) for s in value_splitted]
                 try:
                     date = datetime.date(year=year, month=month, day=day).strftime(fmt)
                     dates.append(date)
-                except ValueError:
-                    logger.info('Specified date is not proper value')
-            elif e['entity'] == 'Date_Format_MD':
-                month, day = [int(re.sub(pattern='[^\\d]+', repl='', string=s).strip())
-                              for s in re.split(pattern='[\\s\\.\\-/]+', string=e['value'])]
-                try:
-                    date = datetime.date(year=today.year, month=month, day=day).strftime(fmt)
-                    dates.append(date)
+                    text = text[:s] + '#' * len(value) + text[e:]
                 except ValueError:
                     logger.info('Specified date is not proper value')
 
-            text = text.replace(e['value'], '#' * len(e['value']))
+        match_md = PATTERN_MD.findall(text)
+        if match_md:
+            for match in match_md:
+                m = re.search(pattern=match, string=text)
+                s, e = m.span()
+                value = text[s:e]
+                value_splitted = [re.sub(pattern='[^\\d]+', repl='', string=s).strip()
+                                  for s in re.split(pattern='[\\s\\.\\-/]+', string=value)]
+                month, day = [int(s) for s in value_splitted]
+                try:
+                    date = datetime.date(year=today.year, month=month, day=day).strftime(fmt)
+                    dates.append(date)
+                    text = text[:s] + '#' * len(value) + text[e:]
+                except ValueError:
+                    logger.info('Specified date is not proper value')
         return dates, text
 
     def check_is_start_end(text: str):
@@ -294,8 +344,8 @@ def extract_dates_from_to(text: str, entities: list, today=None):
 
     def check_is_start(text: str):
         text = text.replace(' ', '')
-        # pattern: Start_Date 부터(시작,...)
-        start_pattern = ['#부터', '#[을를]?시작']
+        # pattern: Start_Date 부터(시작,..., 3번조건: '작일'이 entity로 들어올경우)
+        start_pattern = ['#부터', '#[을를]?시작', '시##자로?']
         for p in start_pattern:
             if re.search(pattern=p, string=text):
                 return True
@@ -326,16 +376,17 @@ def extract_dates_from_to(text: str, entities: list, today=None):
 
     original_text = copy.deepcopy(text)
 
-    entities = extract_date_entities(entities)
-    dates, text = basic_preprocess(entities, text, today)
+    dates, text = basic_preprocess(text, today)
+    entities, text = extract_date_entities(entities, text)
+
     today, entities = set_init_date(entities, today)
     entities = fileter_entities(text, entities)
-
     if entities:
         values = check_combination(entities)
         for v in values:
-            if convert_to_date(v, today):
+            if convert_to_date(v, today) and convert_to_date(v, today) not in dates:
                 dates.append(convert_to_date(v, today))
+
     if len(dates) == 2:
         if check_is_start_end(text):
             start, end = dates

@@ -4,22 +4,43 @@
 from __future__ import unicode_literals, print_function, division
 from reree.rule_generator import RegexPatternGenerator
 from reree.time_converter import extract_dates_from_to
+from reree.helper import get_regex_data, get_regex_combination
 
 from typing import Text, List, Any
 
 import re
+import os
 
 
 class ReReeExtractor:
 
     name = "ReReeExtractor"
 
-    def __init__(self, regex_patterns: list, combination_patterns: dict, today=None) -> None:
+    def __init__(self, regex_patterns: list = None, combination_patterns: dict = None, today=None) -> None:
         """
         patterns: new list of patterns: [{"name": "City", "pattern": "-1-1-23-9"}, ...]
         """
         super(ReReeExtractor, self).__init__()
-        generator = RegexPatternGenerator(regex_patterns, combination_patterns)
+
+        here = '/'.join(os.path.dirname(__file__).split('/'))
+        regex_path = os.path.join(here, "resources", 'regex.md')
+        comb_path = os.path.join(here, "resources", 'regex_combination.yml')
+
+        patterns = get_regex_data(regex_path)
+        combination = get_regex_combination(comb_path)
+
+        # add inserted patterns
+        if regex_patterns:
+            for p in regex_patterns:
+                if p not in patterns:
+                    patterns.append(p)
+        # add inserted dict
+        if combination_patterns:
+            for key, value in combination_patterns.items():
+                if not combination.get(key):
+                    combination[key] = value
+
+        generator = RegexPatternGenerator(patterns, combination)
         self.patterns = generator.generate_patterns()
         self.today = None
 
@@ -41,7 +62,6 @@ class ReReeExtractor:
                 "entity": key,
             }
             extracted.append(entity)
-
         return extracted
 
     def match_regex(self, text: Text):
@@ -59,6 +79,9 @@ class ReReeExtractor:
                         "confidence": 1.0,
                         "entity": d["name"],
                     }
+                    if len(matches) > 1:
+                        text = text[:s] + '#'*len(match.group()) + text[e:]
+
                     extracted.append(entity)
         return extracted
 

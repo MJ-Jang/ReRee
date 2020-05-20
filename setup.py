@@ -11,6 +11,7 @@ setup(
     install_requires=[],
     packages=find_packages(exclude=['docs', 'tests', 'tmp', 'data']),
     python_requires='>=3',
+    package_data={'reree': ['resources/*']},
     zip_safe=False,
     include_package_data=True
 )

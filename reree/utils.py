@@ -26,7 +26,7 @@ def normalize_Count_time(value: str) -> str:
     """
     normalize time related entity values
     """
-    pattern_list = [DATE_PATTERN, WEEK_PATTERN, MONTH_PATTERN, YEAR_PATTERN]
+    pattern_list = [YEAR_PATTERN, MONTH_PATTERN_STACTIC, MONTH_PATTERN, WEEK_PATTERN, DATE_PATTERN]
 
     for pattern in pattern_list:
         out = normalize_pattern(value, pattern)
