@@ -180,7 +180,7 @@ def convert_to_date(cand: dict, today=None) -> str:
                 print('Cannot know exact number of specified date')
 
     if cand['comb'] == ['Month', 'Date']:
-        month = normalize_Count_time(cand['Date'])
+        month = normalize_Count_time(cand['Month'])
         month = re.sub(pattern='[^0-9]+', repl='', string=month)
 
         day = normalize_Count_time(cand['Date'])
@@ -345,7 +345,7 @@ def extract_dates_from_to(text: str, entities: list, today=None):
     def check_is_start(text: str):
         text = text.replace(' ', '')
         # pattern: Start_Date 부터(시작,..., 3번조건: '작일'이 entity로 들어올경우)
-        start_pattern = ['#부터', '#[을를]?시작', '시##자로?']
+        start_pattern = ['#부터', '#[을를]?시작', '#[을를]?시##자로?', '#에서']
         for p in start_pattern:
             if re.search(pattern=p, string=text):
                 return True
@@ -384,7 +384,7 @@ def extract_dates_from_to(text: str, entities: list, today=None):
     if entities:
         values = check_combination(entities)
         for v in values:
-            if convert_to_date(v, today) and convert_to_date(v, today) not in dates:
+            if convert_to_date(v, today) not in dates:
                 dates.append(convert_to_date(v, today))
 
     if len(dates) == 2:
