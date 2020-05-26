@@ -6,7 +6,7 @@ from __future__ import unicode_literals, print_function, division
 
 DATE_PATTERN = {
     '1일': ['일일', '하루'],
-    '2일': ['이일', '이'],
+    '2일': ['이일', '이틀'],
     '3일': ['삼일', '사흘'],
     '4일': ['사일', '나흘'],
     '5일': ['오일', '닷새'],
