@@ -12,7 +12,7 @@ from reree.utils import normalize_Count_time
 
 logger = logging.getLogger()
 
-fmt = '%Y.%m.%d'
+fmt = '%Y%m%d'
 date_pattern = re.compile(pattern='20\\d{2}\\.[0-1]\\d\\.[0-3]\\d')
 KST = datetime.timezone(datetime.timedelta(hours=9))
 days = ['월', '화', '수', '목', '금', '토', '일']
