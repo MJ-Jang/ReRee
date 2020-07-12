@@ -301,10 +301,11 @@ def extract_dates_from_to(text: str, entities: list, today=None):
                 m = re.search(pattern=match, string=text)
                 s, e = m.span()
                 value = text[s:e]
-                value_splitted = [re.sub(pattern='[^\\d]+', repl='', string=s).strip()
-                                  for s in re.split(pattern='[\\s\\.\\-/]+', string=value)]
-                year, month, day = [int(s) for s in value_splitted]
                 try:
+                    value_splitted = [re.sub(pattern='[^\\d]+', repl='', string=s).strip()
+                                      for s in re.split(pattern='[\\s\\.\\-/]+', string=value)]
+                    year, month, day = [int(s) for s in value_splitted]
+
                     date = datetime.date(year=year, month=month, day=day).strftime(fmt)
                     dates.append(date)
                     text = text[:s] + '#' * len(value) + text[e:]
@@ -317,10 +318,10 @@ def extract_dates_from_to(text: str, entities: list, today=None):
                 m = re.search(pattern=match, string=text)
                 s, e = m.span()
                 value = text[s:e]
-                value_splitted = [re.sub(pattern='[^\\d]+', repl='', string=s).strip()
-                                  for s in re.split(pattern='[\\s\\.\\-/]+', string=value)]
-                month, day = [int(s) for s in value_splitted]
                 try:
+                    value_splitted = [re.sub(pattern='[^\\d]+', repl='', string=s).strip()
+                                      for s in re.split(pattern='[\\s\\.\\-/]+', string=value)]
+                    month, day = [int(s) for s in value_splitted]
                     date = datetime.date(year=today.year, month=month, day=day).strftime(fmt)
                     dates.append(date)
                     text = text[:s] + '#' * len(value) + text[e:]
