@@ -70,19 +70,22 @@ class ReReeExtractor:
             matches = re.findall(pattern=d['pattern'], string=text)
             if matches:
                 for pattern_ in matches:
-                    match = re.search(pattern=pattern_, string=text)
-                    s, e = match.span()
-                    entity = {
-                        "start": s,
-                        "end": e,
-                        "value": match.group(),
-                        "confidence": 1.0,
-                        "entity": d["name"],
-                    }
-                    if len(matches) > 1:
-                        text = text[:s] + '#'*len(match.group()) + text[e:]
-
-                    extracted.append(entity)
+                    try:
+                        match = re.search(pattern=pattern_, string=text)
+                        s, e = match.span()
+                        entity = {
+                            "start": s,
+                            "end": e,
+                            "value": match.group(),
+                            "confidence": 1.0,
+                            "entity": d["name"],
+                        }
+                        if len(matches) > 1:
+                            text = text[:s] + '#'*len(match.group()) + text[e:]
+                        extracted.append(entity)
+                    except TypeError:
+                        print(f"pattern: {pattern_}")
+                        
         return extracted
 
     @staticmethod
