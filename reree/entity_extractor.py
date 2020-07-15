@@ -84,8 +84,8 @@ class ReReeExtractor:
                             text = text[:s] + '#'*len(match.group()) + text[e:]
                         extracted.append(entity)
                     except TypeError:
-                        print(f"pattern: {pattern_}")
-                        
+                        print(f"pattern: {pattern_} text: {text}")
+
         return extracted
 
     @staticmethod
