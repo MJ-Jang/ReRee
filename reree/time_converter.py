@@ -286,7 +286,11 @@ def extract_dates_from_to(text: str, entities: list, today=None):
                 try:
                     month = normalize_Count_time(entities[0]['value'])
                     month = int(re.sub(pattern='[^0-9]+', repl='', string=month))
-                    today = datetime.date(year=today.year, month=month, day=today.day)
+                    # exception date handeling logic (today: 31, month: 2,4,6,...)
+                    if today.day == 31 and month in [2, 4, 6, 9, 11]:
+                        today = datetime.date(year=today.year, month=month, day=28)
+                    else:
+                        today = datetime.date(year=today.year, month=month, day=today.day)
                 except ValueError:
                     print('Month is not proper value for converting')
                 entities = entities[1:]
